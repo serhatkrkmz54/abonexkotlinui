@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AboneX</string>
+    <string name="splash_first_text">TÜM PLATFORMLARI,</string>
+    <string name="splash_second_text">tek bir yerden yönetin</string>
+    <string name="splash_third_text">Abonelik yönetimi,harcama takibi,ödeme kontrolü gibi ayrıcalıklar sizinle!</string>
+    <string name="splash_button_text">Hemen başlayın</string>
+</resources>
