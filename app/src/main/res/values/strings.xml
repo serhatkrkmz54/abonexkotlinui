@@ -3,5 +3,9 @@
     <string name="splash_first_text">TÜM PLATFORMLARI,</string>
     <string name="splash_second_text">tek bir yerden yönetin</string>
     <string name="splash_third_text">Abonelik yönetimi,harcama takibi,ödeme kontrolü gibi ayrıcalıklar sizinle!</string>
-    <string name="splash_button_text">Hemen başlayın</string>
+    <string name="splash_button_text">Abonelik Ekranımı Oluştur</string>
+    <string name="welcome_screen_uyelik1">Üyeliğiniz var mı?\u0020</string>
+    <string name="welcome_screen_giris">Giriş Yapın</string>
+    <string name="login_screen_kayit1">Henüz üye değil misiniz?\u0020</string>
+    <string name="login_screen_kayitol">Kayıt Olun</string>
 </resources>

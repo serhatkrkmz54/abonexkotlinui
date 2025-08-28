@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val SplashBg = Color(0xFF030D30)
 val AppBackground = Color(0xFF050511)
+val Orange = Color(0xFFFFA500)
+val InputBorder = Color(0XFF232330)

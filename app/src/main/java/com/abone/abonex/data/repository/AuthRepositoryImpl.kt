@@ -10,6 +10,7 @@ import com.abone.abonex.data.remote.dto.UserDto
 import com.abone.abonex.domain.repository.AuthRepository
 import com.abone.abonex.util.Resource
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -22,18 +23,20 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.isSuccessful) {
                 Resource.Success(response.body()!!)
             } else {
-                var errorMessage = "Bilinmeyen bir hata oluştu."
-
+                var errorMessage: String? = null
                 val errorBody = response.errorBody()?.string()
+
                 if (errorBody != null) {
                     try {
-                        val errorResponse = Gson().fromJson(errorBody, ApiErrorResponse::class.java)
-                        errorMessage = errorResponse.error
+                        val type = object : TypeToken<Map<String, String>>() {}.type
+                        val errorMap: Map<String, String> = Gson().fromJson(errorBody, type)
+
+                        errorMessage = errorMap.values.firstOrNull()
                     } catch (e: Exception) {
                         errorMessage = "Hata (Kod: ${response.code()})"
                     }
                 }
-                Resource.Error(errorMessage)
+                Resource.Error(errorMessage ?: "Bir hata oluştu (Kod: ${response.code()})")
             }
         } catch (e: Exception) {
             Resource.Error("Bir hata oluştu: ${e.message}")
@@ -48,11 +51,13 @@ class AuthRepositoryImpl @Inject constructor(
             } else {
                 val errorBody = response.errorBody()?.string()
                 val errorMessage = try {
-                    Gson().fromJson(errorBody, ApiErrorResponse::class.java).error
+                    val type = object : TypeToken<Map<String, String>>() {}.type
+                    val errorMap: Map<String, String> = Gson().fromJson(errorBody, type)
+                    errorMap.values.firstOrNull()
                 } catch (e: Exception) {
                     "Kayıt başarısız oldu (Kod: ${response.code()})"
                 }
-                Resource.Error(errorMessage)
+                Resource.Error(errorMessage ?: "Bilinmeyen bir hata oluştu (Kod: ${response.code()})")
             }
         } catch (e: Exception) {
             Resource.Error("Bir hata oluştu: ${e.message}")

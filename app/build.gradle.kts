@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.abone.abonex"
-        minSdk = 25
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -71,4 +71,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 }

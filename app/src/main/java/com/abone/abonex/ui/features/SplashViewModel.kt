@@ -17,31 +17,22 @@ class SplashViewModel @Inject constructor(
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
-    // UI'ın dinleyeceği state. Başlangıçta null.
     private val _startDestination = MutableStateFlow<String?>(null)
     val startDestination = _startDestination.asStateFlow()
 
     init {
-        // ViewModel oluşturulur oluşturulmaz token kontrolünü başlat.
         checkToken()
     }
 
     private fun checkToken() {
         viewModelScope.launch {
-            // Splash ekranının en az 1.5 saniye görünmesini sağlayalım (UX için)
             delay(1500L)
 
-            // DataStore'dan token'ı bir kerelik oku.
             val token = tokenManager.getToken().first()
 
             if (token.isNullOrBlank()) {
-                // Token yoksa, Login ekranına gitmesi için yönlendirme yapma,
-                // kullanıcı butona basarak ilerlesin.
-                // Ancak bazı senaryolarda doğrudan Login'e de yollayabiliriz.
-                // Şimdilik null bırakarak kullanıcının butonunu bekliyoruz.
-                _startDestination.value = AppRoute.LOGIN_SCREEN
+                _startDestination.value = AppRoute.WELCOME_SCREEN
             } else {
-                // Token varsa, direkt Home ekranına git.
                 _startDestination.value = AppRoute.HOME_SCREEN
             }
         }

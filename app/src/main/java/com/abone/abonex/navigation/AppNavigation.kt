@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.abone.abonex.feature.SplashScreen
+import com.abone.abonex.feature.WelcomeScreen
 import com.abone.abonex.screens.LoginScreen
+import com.abone.abonex.screens.RegisterScreen
 
 @Composable
 fun AppNavigation() {
@@ -17,8 +19,15 @@ fun AppNavigation() {
         startDestination = AppRoute.SPLASH_SCREEN
     ) {
         composable(route = AppRoute.SPLASH_SCREEN) {
-            // SplashScreen'e navController'ı doğrudan veriyoruz.
             SplashScreen(navController = navController)
+        }
+
+        composable(route = AppRoute.WELCOME_SCREEN) {
+            WelcomeScreen(navController = navController)
+        }
+
+        composable(route = AppRoute.REGISTER_SCREEN) {
+            RegisterScreen(navController = navController)
         }
 
         composable(route = AppRoute.LOGIN_SCREEN) {
