@@ -1,4 +1,4 @@
-package com.abone.abonex.components
+package com.abone.abonex.components.bottomnav
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

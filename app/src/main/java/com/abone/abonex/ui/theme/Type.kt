@@ -14,6 +14,14 @@ val poppins = FontFamily(
     Font(R.font.poppins_light, FontWeight.Light)
 )
 
+val redRose = FontFamily(
+    Font(R.font.redrose_bold, FontWeight.Bold),
+    Font(R.font.redrose_light, FontWeight.Light),
+    Font(R.font.redrose_medium, FontWeight.Medium),
+    Font(R.font.redrose_regular, FontWeight.Normal),
+    Font(R.font.redrose_semibold, FontWeight.SemiBold)
+)
+
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,

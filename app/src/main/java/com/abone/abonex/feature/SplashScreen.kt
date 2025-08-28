@@ -18,6 +18,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,12 +33,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.abone.abonex.R
+import com.abone.abonex.navigation.AppRoute
+import com.abone.abonex.ui.features.SplashViewModel
 import com.abone.abonex.ui.theme.poppins
 
 @Composable
-@Preview
-fun SplashScreen(onStartClick: () -> Unit ={}) {
+fun SplashScreen(navController: NavController,
+                 viewModel: SplashViewModel = hiltViewModel()) {
+    val startDestination by viewModel.startDestination.collectAsState()
+    LaunchedEffect(startDestination) {
+        startDestination?.let { route ->
+            // ViewModel bir rota belirlediğinde navigasyonu gerçekleştir
+            navController.navigate(route) {
+                popUpTo(AppRoute.SPLASH_SCREEN) {
+                    inclusive = true
+                }
+            }
+        }
+    }
+
     Box (
         modifier = Modifier
             .fillMaxSize()
@@ -78,7 +97,10 @@ fun SplashScreen(onStartClick: () -> Unit ={}) {
                     .padding(top = 10.dp)
             )
         }
-        Button(onClick = onStartClick,
+        Button(onClick = {
+            navController.navigate(AppRoute.LOGIN_SCREEN) {
+                popUpTo(AppRoute.SPLASH_SCREEN) { inclusive = true }}
+        },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(60.dp)

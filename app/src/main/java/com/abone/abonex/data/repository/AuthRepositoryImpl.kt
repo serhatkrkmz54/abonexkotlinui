@@ -1,0 +1,78 @@
+package com.abone.abonex.data.repository
+
+import com.abone.abonex.data.remote.api.AuthApiService
+import com.abone.abonex.data.remote.dto.ApiErrorResponse
+import com.abone.abonex.data.remote.dto.AuthResponse
+import com.abone.abonex.data.remote.dto.LoginRequest
+import com.abone.abonex.data.remote.dto.ReactivateRequest
+import com.abone.abonex.data.remote.dto.RegisterRequest
+import com.abone.abonex.data.remote.dto.UserDto
+import com.abone.abonex.domain.repository.AuthRepository
+import com.abone.abonex.util.Resource
+import com.google.gson.Gson
+import javax.inject.Inject
+
+class AuthRepositoryImpl @Inject constructor(
+    private val apiService: AuthApiService
+) : AuthRepository {
+
+    override suspend fun login(request: LoginRequest): Resource<AuthResponse> {
+        return try {
+            val response = apiService.login(request)
+            if (response.isSuccessful) {
+                Resource.Success(response.body()!!)
+            } else {
+                var errorMessage = "Bilinmeyen bir hata oluştu."
+
+                val errorBody = response.errorBody()?.string()
+                if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, ApiErrorResponse::class.java)
+                        errorMessage = errorResponse.error
+                    } catch (e: Exception) {
+                        errorMessage = "Hata (Kod: ${response.code()})"
+                    }
+                }
+                Resource.Error(errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource.Error("Bir hata oluştu: ${e.message}")
+        }
+    }
+
+    override suspend fun register(request: RegisterRequest): Resource<AuthResponse> {
+        return try {
+            val response = apiService.register(request)
+            if (response.isSuccessful) {
+                Resource.Success(response.body()!!)
+            } else {
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = try {
+                    Gson().fromJson(errorBody, ApiErrorResponse::class.java).error
+                } catch (e: Exception) {
+                    "Kayıt başarısız oldu (Kod: ${response.code()})"
+                }
+                Resource.Error(errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource.Error("Bir hata oluştu: ${e.message}")
+        }
+    }
+
+    override suspend fun reactivateAccount(request: ReactivateRequest): Resource<AuthResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getUserProfile(): Resource<UserDto> {
+        return try {
+            val response = apiService.getUserProfile()
+            if (response.isSuccessful) {
+                Resource.Success(response.body()!!)
+            } else {
+                Resource.Error("Profil bilgileri alınamadı (Kod: ${response.code()})")
+            }
+        } catch (e: Exception) {
+            Resource.Error("Bağlantı hatası: ${e.message}")
+        }
+    }
+}

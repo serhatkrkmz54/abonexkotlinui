@@ -1,4 +1,4 @@
-package com.abone.abonex.components
+package com.abone.abonex.components.bottomnav
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -51,9 +54,9 @@ val bottomNavItems = listOf(
         route = "profile"
     ),
     BottomNavItem(
-        label = "Profil",
-        icon = Icons.Default.Person,
-        route = "profile"
+        label = "Çıkış Yap",
+        icon = Icons.Default.ExitToApp,
+        route = "logout"
     )
 )
 
@@ -73,8 +76,9 @@ fun CustomAppBar(
         BottomAppBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(75.dp)
-                .clip(CurvedBottomBarShape()),
+                .height(90.dp)
+                .clip(CurvedBottomBarShape())
+                .navigationBarsPadding(),
             containerColor = colorResource(R.color.bottom_bar_bg),
             tonalElevation = 10.dp
         ) {
@@ -88,8 +92,26 @@ fun CustomAppBar(
                         Spacer(modifier = Modifier.width(64.dp))
                     }
 
+                    val colors = if (item.route == "logout") {
+                        NavigationBarItemDefaults.colors(
+                            selectedIconColor = colorResource(R.color.logout_bg),
+                            unselectedIconColor = colorResource(R.color.logout_bg),
+                            selectedTextColor = colorResource(R.color.logout_bg),
+                            unselectedTextColor = colorResource(R.color.logout_bg),
+                            indicatorColor = Color.Transparent
+                        )
+                    } else {
+                        NavigationBarItemDefaults.colors(
+                            selectedIconColor = colorResource(R.color.bottom_bar_buttons_hover),
+                            selectedTextColor = colorResource(R.color.bottom_bar_buttons_hover),
+                            unselectedIconColor = Color.White.copy(alpha = 0.6f),
+                            unselectedTextColor = Color.White.copy(alpha = 0.6f),
+                            indicatorColor = Color.Transparent
+                        )
+                    }
+
                     NavigationBarItem(
-                        selected = currentRoute == item.route,
+                        selected = if (item.route == "logout") false else currentRoute == item.route,
                         onClick = { onItemClick(item) },
                         icon = {
                             Icon(
@@ -105,13 +127,7 @@ fun CustomAppBar(
                                 fontFamily = poppins
                             )
                         },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = colorResource(R.color.bottom_bar_buttons_hover),
-                            selectedTextColor = colorResource(R.color.bottom_bar_buttons_hover),
-                            unselectedIconColor = Color.White.copy(alpha = 0.6f),
-                            unselectedTextColor = Color.White.copy(alpha = 0.6f),
-                            indicatorColor = Color.Transparent
-                        )
+                        colors = colors
                     )
                 }
             }
@@ -121,13 +137,13 @@ fun CustomAppBar(
             onClick = onFabClick,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .offset(y = (-18).dp)
+                .offset(y = (-34).dp)
                 .size(64.dp),
             shape = CircleShape,
             containerColor = colorResource(R.color.bottom_bar_plus_icon),
-            contentColor = MaterialTheme.colorScheme.onSecondary
+            contentColor = colorResource(R.color.white)
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Abonelik Ekle")
+            Icon(Icons.Default.Add, contentDescription = "Abonelik Ekle", modifier = Modifier.size(40.dp))
         }
     }
 }

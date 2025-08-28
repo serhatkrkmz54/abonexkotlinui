@@ -11,5 +11,8 @@
     <color name="splash_button_text">#FF24293E</color>
     <color name="bottom_bar_bg">#FF0A091B</color>
     <color name="bottom_bar_plus_icon">#FF4649E4</color>
+    <color name="bottom_bar_plus_icon_bg">#FF4649E4</color>
     <color name="bottom_bar_buttons_hover">#FF9899F6</color>
+    <color name="header_text">#FFE4E4ED</color>
+    <color name="logout_bg">#FFFB4949</color>
 </resources>
