@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.abone.abonex.feature.SplashScreen
 import com.abone.abonex.feature.WelcomeScreen
 import com.abone.abonex.screens.LoginScreen
+import com.abone.abonex.screens.ProfileScreen
 import com.abone.abonex.screens.RegisterScreen
 
 @Composable
@@ -36,6 +37,9 @@ fun AppNavigation() {
 
         composable(route = AppRoute.HOME_SCREEN) {
             HomeScreen(navController = navController)
+        }
+        composable(AppRoute.PROFILE_SCREEN) {
+            ProfileScreen(navController = navController)
         }
     }
 }

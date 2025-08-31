@@ -6,4 +6,5 @@ object AppRoute {
     const val HOME_SCREEN = "home_screen"
     const val WELCOME_SCREEN = "welcome_screen"
     const val REGISTER_SCREEN = "register_screen"
+    const val PROFILE_SCREEN = "profile_screen"
 }

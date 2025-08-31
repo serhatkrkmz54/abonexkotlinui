@@ -8,4 +8,7 @@
     <string name="welcome_screen_giris">Giriş Yapın</string>
     <string name="login_screen_kayit1">Henüz üye değil misiniz?\u0020</string>
     <string name="login_screen_kayitol">Kayıt Olun</string>
+    <string name="register_first_text">Abonelik yönetimi için hemen kayıt olun!</string>
+    <string name="home_content_is_empty1">Henüz bir aboneliğiniz yok</string>
+    <string name="home_content_is_empty2">Aboneliklerinizi ekleyerek takip etmeye başlayın</string>
 </resources>

@@ -1,9 +1,9 @@
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.abone.abonex.components.bottomnav.CustomAppBar
+import com.abone.abonex.components.main.EmptyContent
 import com.abone.abonex.components.main.HeaderSection
 import com.abone.abonex.navigation.AppRoute
 import com.abone.abonex.ui.features.HomeViewModel
@@ -35,7 +36,8 @@ fun HomeScreen(
             uiState.user?.let { user ->
                 HeaderSection(
                     fullName = user.firstName,
-                    profileImageUrl = user.profileImageUrl
+                    profileImageUrl = user.profileImageUrl,
+                    modifier = Modifier.statusBarsPadding()
                 )
             }
         },
@@ -43,14 +45,20 @@ fun HomeScreen(
             CustomAppBar(
                 onFabClick = { screenTitle = "FAB Tıklandı!" },
                 onItemClick = { item ->
-                    if (item.route == "logout") {
-                        viewModel.logout()
-                        navController.navigate(AppRoute.LOGIN_SCREEN) {
-                            popUpTo(0)
+                    when (item.route) {
+                        "logout" -> {
+                            viewModel.logout()
+                            navController.navigate(AppRoute.LOGIN_SCREEN) {
+                                popUpTo(0)
+                            }
                         }
-                    } else {
-                        selectedItemRoute = item.route
-                        screenTitle = item.label
+                        "profile" -> {
+                            navController.navigate(AppRoute.PROFILE_SCREEN)
+                        }
+                        else -> {
+                            selectedItemRoute = item.route
+                            screenTitle = item.label
+                        }
                     }
                 },
                 currentRoute = selectedItemRoute
@@ -71,10 +79,13 @@ fun HomeScreen(
                     Text(text = "Hata: ${uiState.error}")
                 }
                 else -> {
-                    Text(
-                        text = "Seçilen Ekran: $screenTitle",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
+                    when (selectedItemRoute) {
+                        "home" -> {
+                            EmptyContent(onAddClick = {
+                                println("Ekleme butonuna tıklandı!")
+                            })
+                        }
+                    }
                 }
             }
         }

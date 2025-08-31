@@ -1,5 +1,6 @@
 package com.abone.abonex.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,17 +25,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.abone.abonex.domain.repository.Gender
+import com.abone.abonex.R
+import com.abone.abonex.domain.enums.Gender
 import com.abone.abonex.navigation.AppRoute
 import com.abone.abonex.ui.features.RegisterViewModel
 import com.abone.abonex.ui.theme.InputBorder
+import com.abone.abonex.ui.theme.poppins
 import com.abone.abonex.util.Resource
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -112,23 +118,29 @@ fun RegisterScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.splash_logo_800x),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .size(120.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+
             Text(
-                "Aramıza katılmak için bilgilerini gir",
+                stringResource(R.string.register_first_text),
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                CustomOutlinedTextField(value = uiState.firstName, onValueChange = viewModel::onFirstNameChange, placeholder = "Ad", modifier = Modifier.weight(1f), leadingIcon = Icons.Default.Person)
-                CustomOutlinedTextField(value = uiState.lastName, onValueChange = viewModel::onLastNameChange, placeholder = "Soyad", modifier = Modifier.weight(1f), leadingIcon = Icons.Default.People)
-            }
+            CustomOutlinedTextField(value = uiState.firstName, onValueChange = viewModel::onFirstNameChange, placeholder = "Ad", leadingIcon = Icons.Default.Person)
+
+            CustomOutlinedTextField(value = uiState.lastName, onValueChange = viewModel::onLastNameChange, placeholder = "Soyad", leadingIcon = Icons.Default.People)
 
             CustomOutlinedTextField(value = uiState.email, onValueChange = viewModel::onEmailChange, placeholder = "Email", keyboardType = KeyboardType.Email, leadingIcon = Icons.Default.Email)
 
@@ -201,7 +213,7 @@ fun CustomOutlinedTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { Text(placeholder, color = Color.Gray) },
+        placeholder = { Text(placeholder, color = Color.White, fontSize = 14.sp, fontFamily = poppins, fontWeight = FontWeight.ExtraLight) },
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         singleLine = true,
@@ -215,6 +227,7 @@ fun CustomOutlinedTextField(
         colors = TextFieldDefaults.colors(
             focusedContainerColor = InputBorder,
             unfocusedContainerColor = InputBorder,
+            disabledContainerColor = InputBorder,
             cursorColor = Color.White,
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,

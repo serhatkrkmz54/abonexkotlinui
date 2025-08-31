@@ -55,7 +55,7 @@ fun WelcomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(start = 24.dp, end = 24.dp, bottom = 200.dp),
+                .padding(start = 24.dp, end = 24.dp, bottom = 220.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
@@ -89,7 +89,7 @@ fun WelcomeScreen(navController: NavController) {
         },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 90.dp, horizontal = 24.dp)
+                .padding(vertical = 120.dp, horizontal = 24.dp)
                 .align(Alignment.BottomCenter)
                 .height(50.dp),
             shape = RoundedCornerShape(18.dp),
@@ -114,7 +114,7 @@ fun WelcomeScreen(navController: NavController) {
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(vertical = 50.dp),
+                .padding(vertical = 70.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

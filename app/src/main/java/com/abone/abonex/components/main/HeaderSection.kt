@@ -28,11 +28,12 @@ import com.abone.abonex.ui.theme.redRose
 @Composable
 fun HeaderSection(
     fullName: String,
-    profileImageUrl: String?
+    profileImageUrl: String?,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 17.dp, vertical = 4.dp)
+            .padding(horizontal = 17.dp, vertical = 15.dp)
             .fillMaxWidth()
             .statusBarsPadding(),
         verticalAlignment = Alignment.CenterVertically

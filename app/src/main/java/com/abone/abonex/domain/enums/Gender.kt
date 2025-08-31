@@ -1,4 +1,4 @@
-package com.abone.abonex.domain.repository
+package com.abone.abonex.domain.enums
 
 enum class Gender(val displayName: String) {
     MALE("Erkek"),
