@@ -2,7 +2,10 @@ package com.abone.abonex.di
 
 import com.abone.abonex.data.local.TokenManager
 import com.abone.abonex.data.remote.api.AuthApiService
+import com.abone.abonex.data.remote.api.UserApiService
 import com.abone.abonex.data.remote.interceptor.AuthInterceptor
+import com.abone.abonex.data.repository.UserRepositoryImpl
+import com.abone.abonex.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +20,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "http://192.168.1.134:8080/"
+    private const val BASE_URL = "http://10.121.242.101:8080/"
 
     @Provides
     @Singleton
@@ -57,5 +60,17 @@ object NetworkModule {
     @Singleton
     fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserApiService(retrofit: Retrofit): UserApiService {
+        return retrofit.create(UserApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(userApiService: UserApiService): UserRepository {
+        return UserRepositoryImpl(userApiService)
     }
 }

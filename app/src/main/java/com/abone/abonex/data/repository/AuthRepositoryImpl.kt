@@ -68,16 +68,4 @@ class AuthRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getUserProfile(): Resource<UserDto> {
-        return try {
-            val response = apiService.getUserProfile()
-            if (response.isSuccessful) {
-                Resource.Success(response.body()!!)
-            } else {
-                Resource.Error("Profil bilgileri alınamadı (Kod: ${response.code()})")
-            }
-        } catch (e: Exception) {
-            Resource.Error("Bağlantı hatası: ${e.message}")
-        }
-    }
 }

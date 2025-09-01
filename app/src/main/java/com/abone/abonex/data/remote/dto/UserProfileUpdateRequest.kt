@@ -1,16 +1,11 @@
 package com.abone.abonex.data.remote.dto
 
-import com.google.gson.annotations.SerializedName
-
-data class UserDto(
-    val id: Long,
+data class UserProfileUpdateRequest(
     val firstName: String,
     val lastName: String,
     val email: String,
     val dateOfBirth: String?,
     val gender: String?,
     val phoneNumber: String?,
-    val profileImageUrl: String?,
-    @SerializedName("enabled")
-    val enabled: Boolean
+    val profileImageUrl: String?
 )

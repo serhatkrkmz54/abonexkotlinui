@@ -11,5 +11,4 @@ interface AuthRepository {
     suspend fun login(request: LoginRequest): Resource<AuthResponse>
     suspend fun register(request: RegisterRequest): Resource<AuthResponse>
     suspend fun reactivateAccount(request: ReactivateRequest): Resource<AuthResponse>
-    suspend fun getUserProfile(): Resource<UserDto>
 }

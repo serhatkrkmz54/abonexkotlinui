@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.abone.abonex.data.local.TokenManager
 import com.abone.abonex.data.remote.dto.UserDto
 import com.abone.abonex.domain.repository.AuthRepository
+import com.abone.abonex.domain.repository.UserRepository
 import com.abone.abonex.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +23,7 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
@@ -28,22 +31,21 @@ class HomeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        loadUserProfile()
+        viewModelScope.launch {
+            userRepository.loadUserProfile()
+        }
+        observeUserProfile()
     }
 
-    private fun loadUserProfile() {
+    private fun observeUserProfile() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-
-            when (val result = authRepository.getUserProfile()) {
-                is Resource.Success -> {
-                    _uiState.value = HomeUiState(isLoading = false, user = result.data)
+            userRepository.getCachedUserProfile()
+                .catch { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message) }
                 }
-                is Resource.Error -> {
-                    _uiState.value = HomeUiState(isLoading = false, error = result.message)
+                .collect { user ->
+                    _uiState.update { it.copy(isLoading = false, user = user, error = null) }
                 }
-                else -> {}
-            }
         }
     }
 

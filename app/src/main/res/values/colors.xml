@@ -15,4 +15,5 @@
     <color name="bottom_bar_buttons_hover">#FF9899F6</color>
     <color name="header_text">#FFE4E4ED</color>
     <color name="logout_bg">#FFFB4949</color>
+    <color name="save_bg">#FF1ED760</color>
 </resources>

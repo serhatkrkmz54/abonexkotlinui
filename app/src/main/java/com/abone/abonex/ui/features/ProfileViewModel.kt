@@ -2,54 +2,86 @@ package com.abone.abonex.ui.features
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abone.abonex.data.local.TokenManager
 import com.abone.abonex.data.remote.dto.UserDto
+import com.abone.abonex.data.remote.dto.UserProfileUpdateRequest
 import com.abone.abonex.domain.repository.AuthRepository
+import com.abone.abonex.domain.repository.UserRepository
 import com.abone.abonex.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userRepository: AuthRepository
+    private val userRepository: UserRepository,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()
+
     init {
-        loadUserProfile()
+        observeUserProfile()
     }
 
-    private fun loadUserProfile() {
+    private fun observeUserProfile() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-
-            val result = userRepository.getUserProfile()
-
-            when (result) {
-                is Resource.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            user = result.data,
-                            error = null
-                        )
-                    }
+            userRepository.getCachedUserProfile()
+                .catch { e ->
+                    _uiState.update { it.copy(isLoading = false, error = e.message) }
                 }
-                is Resource.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = result.message ?: "Bilinmeyen bir hata oluştu!"
-                        )
-                    }
+                .collect { user ->
+                    _uiState.update { it.copy(isLoading = false, user = user, error = null) }
                 }
-                else -> {}
+        }
+    }
+
+    fun updateUserProfile(request: UserProfileUpdateRequest) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, updateError = null) }
+
+            val result = userRepository.updateUserProfile(request)
+
+            if (result is Resource.Error) {
+                _uiState.update {
+                    it.copy(isLoading = false, updateError = result.message)
+                }
+            }
+
+            else {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
+
+    fun clearUpdateError() {
+        _uiState.update { it.copy(updateError = null) }
+    }
+
+    fun deactivateAccount() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val result = userRepository.deactivateAccount()
+            if (result is Resource.Success) {
+                tokenManager.clearToken()
+                _uiState.update { it.copy(isLoading = false, isDeactivated = true) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        updateError = result.message ?: "Hesap pasif hale getirilemedi."
+                    )
+                }
+            }
+        }
+    }
+
     fun logout() {
         // TODO: Çıkış yapma işlemleri eklenecek
     }
