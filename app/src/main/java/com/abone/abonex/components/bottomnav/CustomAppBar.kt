@@ -55,7 +55,7 @@ val bottomNavItems = listOf(
     ),
     BottomNavItem(
         label = "Çıkış Yap",
-        icon = Icons.Default.ExitToApp,
+        icon = Icons.AutoMirrored.Filled.ExitToApp,
         route = "logout"
     )
 )
@@ -80,8 +80,8 @@ fun CustomAppBar(
                 .clip(CurvedBottomBarShape())
                 .navigationBarsPadding(),
             containerColor = colorResource(R.color.bottom_bar_bg),
-            tonalElevation = 10.dp
-        ) {
+            tonalElevation = 12.dp,
+            ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,

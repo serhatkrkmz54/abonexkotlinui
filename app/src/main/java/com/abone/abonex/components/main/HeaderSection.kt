@@ -33,7 +33,7 @@ fun HeaderSection(
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 17.dp, vertical = 15.dp)
+            .padding(horizontal = 17.dp, vertical = 25.dp)
             .fillMaxWidth()
             .statusBarsPadding(),
         verticalAlignment = Alignment.CenterVertically

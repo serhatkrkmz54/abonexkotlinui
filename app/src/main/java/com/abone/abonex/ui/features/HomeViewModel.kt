@@ -39,64 +39,57 @@ class HomeViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        loadInitialData()
+
+        observeUserProfile()
+        observeSubscriptions()
+        observeMonthlySpend()
+
+        refreshAllData()
     }
 
-    private fun loadInitialData() {
+    fun refreshAllData() {
         viewModelScope.launch {
             userRepository.loadUserProfile()
-
-            launch { observeUserProfile() }
-            launch { loadSubscriptions() }
-            launch { loadMonthlySpend() }
+            subscriptionRepository.refreshUserSubscriptions()
+            subscriptionRepository.refreshMonthlySpend()
         }
     }
 
-    private suspend fun observeUserProfile() {
-        userRepository.getCachedUserProfile()
-            .catch { e ->
-
-                _uiState.update { it.copy(error = e.message) }
-            }
-            .collect { user ->
-                _uiState.update { currentState ->
-                    currentState.copy(user = user)
-                }
-            }
-    }
-
-    private suspend fun loadSubscriptions() {
-        subscriptionRepository.getUserSubscriptions().collect { result ->
-            _uiState.update { currentState ->
-                when (result) {
-                    is Resource.Loading -> currentState.copy(isLoading = true)
-                    is Resource.Success -> currentState.copy(
-                        isLoading = false,
-                        subscriptions = result.data ?: emptyList(),
-                        error = null
-                    )
-                    is Resource.Error -> currentState.copy(
-                        isLoading = false,
-                        error = result.message ?: "Abonelikler yüklenemedi."
-                    )
-                    else -> currentState
-                }
-            }
-        }
-    }
-
-    private fun loadMonthlySpend() {
+    private fun observeUserProfile() {
         viewModelScope.launch {
-            subscriptionRepository.getCurrentMonthTotalSpend().collect { result ->
+            userRepository.getCachedUserProfile()
+                .catch { e -> _uiState.update { it.copy(error = e.message) } }
+                .collect { user -> _uiState.update { it.copy(user = user) } }
+        }
+    }
+
+    private fun observeSubscriptions() {
+        viewModelScope.launch {
+            subscriptionRepository.getUserSubscriptions().collect { result ->
                 _uiState.update { currentState ->
                     when (result) {
-                        is Resource.Success -> {
-                            currentState.copy(
-                                monthlySpend = result.data,
-                            )
-                        }
+                        is Resource.Loading -> currentState.copy(isLoading = true)
+                        is Resource.Success -> currentState.copy(
+                            isLoading = false,
+                            subscriptions = result.data ?: emptyList(),
+                            error = null
+                        )
+                        is Resource.Error -> currentState.copy(
+                            isLoading = false,
+                            error = result.message ?: "Abonelikler yüklenemedi."
+                        )
                         else -> currentState
                     }
+                }
+            }
+        }
+    }
+
+    private fun observeMonthlySpend() {
+        viewModelScope.launch {
+            subscriptionRepository.getCurrentMonthTotalSpend().collect { result ->
+                if (result is Resource.Success) {
+                    _uiState.update { it.copy(monthlySpend = result.data) }
                 }
             }
         }
