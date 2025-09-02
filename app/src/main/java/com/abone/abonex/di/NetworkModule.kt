@@ -3,8 +3,11 @@ package com.abone.abonex.di
 import com.abone.abonex.data.local.TokenManager
 import com.abone.abonex.data.remote.api.AuthApiService
 import com.abone.abonex.data.remote.api.UserApiService
+import com.abone.abonex.data.remote.api.subs.SubscriptionApiService
 import com.abone.abonex.data.remote.interceptor.AuthInterceptor
 import com.abone.abonex.data.repository.UserRepositoryImpl
+import com.abone.abonex.data.repository.subs.SubscriptionRepositoryImpl
+import com.abone.abonex.domain.repository.SubscriptionRepository
 import com.abone.abonex.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -72,5 +75,17 @@ object NetworkModule {
     @Singleton
     fun provideUserRepository(userApiService: UserApiService): UserRepository {
         return UserRepositoryImpl(userApiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSubscriptionApiService(retrofit: Retrofit): SubscriptionApiService {
+        return retrofit.create(SubscriptionApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSubscriptionRepository(subscriptionApiService: SubscriptionApiService): SubscriptionRepository {
+        return SubscriptionRepositoryImpl(subscriptionApiService)
     }
 }

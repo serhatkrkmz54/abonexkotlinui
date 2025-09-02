@@ -15,3 +15,6 @@ val AppBackground = Color(0xFF050511)
 val Orange = Color(0xFFFFA500)
 val InputBorder = Color(0XFF232330)
 val ProfileSectionBg = Color(0XFF101019)
+
+val GradientStart = Color(0xFF4D4D61)
+val GradientEnd = Color(0xFF2C2C5F)
