@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -106,7 +107,7 @@ fun WelcomeScreen(navController: NavController) {
                 color = colorResource(R.color.splash_button_text)
             )
             Icon(
-                imageVector = Icons.Default.ArrowForward,
+                imageVector = Icons.Filled.ArrowBackIosNew,
                 contentDescription = null,
                 modifier = Modifier.padding(start = 8.dp)
             )

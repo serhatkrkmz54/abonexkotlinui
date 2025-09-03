@@ -1,16 +1,22 @@
 package com.abone.abonex.navigation
 
 import HomeScreen
+import android.R.attr.type
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.abone.abonex.feature.SplashScreen
 import com.abone.abonex.feature.WelcomeScreen
 import com.abone.abonex.screens.AddSubscriptionScreen
+import com.abone.abonex.screens.AllSubscriptionsScreen
 import com.abone.abonex.screens.LoginScreen
 import com.abone.abonex.screens.ProfileScreen
 import com.abone.abonex.screens.RegisterScreen
+import com.abone.abonex.screens.SubscriptionDetailScreen
+import com.abone.abonex.screens.TemplateConfirmationScreen
 
 @Composable
 fun AppNavigation() {
@@ -44,6 +50,23 @@ fun AppNavigation() {
         }
         composable(route = AppRoute.ADD_SUBSCRIPTION_SCREEN) {
             AddSubscriptionScreen(navController = navController)
+        }
+        composable(route = AppRoute.ALL_SUBSCRIPTIONS_SCREEN) {
+            AllSubscriptionsScreen(navController = navController)
+        }
+        composable(
+            route = "${AppRoute.TEMPLATE_CONFIRM_SCREEN}/{planId}",
+            arguments = listOf(
+                navArgument("planId") { type = NavType.LongType }
+            )
+        ) {
+            TemplateConfirmationScreen(navController = navController)
+        }
+        composable(
+            route = "${AppRoute.SUBSCRIPTION_DETAIL_SCREEN}/{subscriptionId}",
+            arguments = listOf(navArgument("subscriptionId") { type = NavType.LongType })
+        ) {
+            SubscriptionDetailScreen(navController = navController)
         }
     }
 }

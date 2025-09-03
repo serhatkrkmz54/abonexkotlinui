@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.abone.abonex.R
+import com.abone.abonex.ui.theme.AppBackground
 import com.abone.abonex.ui.theme.poppins
 
 val bottomNavItems = listOf(
@@ -79,7 +80,7 @@ fun CustomAppBar(
                 .height(90.dp)
                 .clip(CurvedBottomBarShape())
                 .navigationBarsPadding(),
-            containerColor = colorResource(R.color.bottom_bar_bg),
+            containerColor = AppBackground,
             tonalElevation = 12.dp,
             ) {
             Row(

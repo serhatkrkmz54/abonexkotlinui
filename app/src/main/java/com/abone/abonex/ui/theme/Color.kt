@@ -18,3 +18,8 @@ val ProfileSectionBg = Color(0XFF101019)
 
 val GradientStart = Color(0xFF4D4D61)
 val GradientEnd = Color(0xFF2C2C5F)
+
+val overdueBorderColor = Color(0xFFE53935)
+val upcomingBorderColor = Color(0xFFFFA726)
+val expiredBorderColor = Color(0xFF42A5F5)
+val otherBorderColor = Color(0xFF66BB6A)

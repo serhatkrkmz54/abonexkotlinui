@@ -1,8 +1,10 @@
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,11 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.AddCard
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.EventBusy
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -44,9 +51,13 @@ import com.abone.abonex.components.bottomnav.CustomAppBar
 import com.abone.abonex.components.main.EmptyContent
 import com.abone.abonex.components.main.HeaderSection
 import com.abone.abonex.components.main.MonthlySpendCard
-import com.abone.abonex.components.main.SubscriptionList
+import com.abone.abonex.components.main.SubscriptionCategorySection
 import com.abone.abonex.navigation.AppRoute
 import com.abone.abonex.ui.features.HomeViewModel
+import com.abone.abonex.ui.theme.expiredBorderColor
+import com.abone.abonex.ui.theme.otherBorderColor
+import com.abone.abonex.ui.theme.overdueBorderColor
+import com.abone.abonex.ui.theme.upcomingBorderColor
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,18 +77,14 @@ fun HomeScreen(
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
-            // DEĞİŞİKLİK 1: Üst köşeleri daha oval yapıyoruz
             shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
-            // DEĞİŞİKLİK 2: Temayla uyumlu bir arkaplan rengi belirliyoruz
             containerColor = MaterialTheme.colorScheme.surface
         ) {
-            // DEĞİŞİKLİK 3: Menü içeriğine daha iyi bir yapı ve boşluk veriyoruz
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 32.dp)
             ) {
-                // Drag Handle (tutma çubuğu) için üstte boşluk bırak
                 Spacer(modifier = Modifier.height(16.dp))
 
                 BottomSheetOption(
@@ -100,7 +107,7 @@ fun HomeScreen(
                         scope.launch { sheetState.hide() }.invokeOnCompletion {
                             if (!sheetState.isVisible) {
                                 showBottomSheet = false
-                                println("Hazır Abonelikler ekranına gidilecek.")
+                                navController.navigate(AppRoute.ALL_SUBSCRIPTIONS_SCREEN)
                             }
                         }
                     }
@@ -120,16 +127,16 @@ fun HomeScreen(
                         profileImageUrl = user.profileImageUrl
                     )
                 }
-                if (uiState.subscriptions.isNotEmpty()) {
                     uiState.monthlySpend?.let { spend ->
-                        MonthlySpendCard(
-                            amount = spend.totalAmount,
-                            currency = spend.currency,
-                            month = spend.month.name,
-                            cardTypeLogo = R.drawable.mastercard_icon
-                        )
+                        if (spend.totalAmount > 0) {
+                            MonthlySpendCard(
+                                amount = spend.totalAmount,
+                                currency = spend.currency,
+                                month = spend.month.name,
+                                cardTypeLogo = R.drawable.mastercard_icon
+                            )
+                        }
                     }
-                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
         },
@@ -161,7 +168,52 @@ fun HomeScreen(
             when {
                 uiState.isLoading -> CircularProgressIndicator()
                 uiState.error != null -> Text(text = "Hata: ${uiState.error}")
-                uiState.subscriptions.isNotEmpty() -> SubscriptionList(subscriptions = uiState.subscriptions)
+                uiState.homeSubscriptions != null -> {
+                    val subs = uiState.homeSubscriptions!!
+                    if(subs.overdue.isEmpty() && subs.upcoming.isEmpty() && subs.expired.isEmpty() && subs.other.isEmpty()) {
+                        EmptyContent(onAddClick = { showBottomSheet = true })
+                    } else {
+                        LazyColumn(modifier = Modifier.fillMaxSize(),contentPadding = PaddingValues(bottom = 30.dp)) {
+                            item {
+                                SubscriptionCategorySection(
+                                    title = "Gecikmiş Ödemeler",
+                                    icon = Icons.Default.ErrorOutline,
+                                    subscriptions = subs.overdue,
+                                    navController = navController,
+                                    titleColor = overdueBorderColor,
+                                    itemBorderColor = overdueBorderColor
+                                )
+                            }
+                            item {
+                                SubscriptionCategorySection(
+                                    title = "Yaklaşan Ödemeler",
+                                    icon = Icons.Default.Update,
+                                    subscriptions = subs.upcoming,
+                                    navController = navController,
+                                    itemBorderColor = upcomingBorderColor
+                                )
+                            }
+                            item {
+                                SubscriptionCategorySection(
+                                    title = "Süresi Dolan Abonelikler",
+                                    subscriptions = subs.expired,
+                                    icon = Icons.Default.EventBusy,
+                                    navController = navController,
+                                    itemBorderColor = expiredBorderColor
+                                )
+                            }
+                            item {
+                                SubscriptionCategorySection(
+                                    title = "Aktif Abonelikler",
+                                    icon = Icons.AutoMirrored.Filled.List,
+                                    subscriptions = subs.other,
+                                    navController = navController,
+                                    itemBorderColor = otherBorderColor
+                                )
+                            }
+                        }
+                    }
+                }
                 else -> {
                     if (selectedItemRoute == "home") {
                         EmptyContent(
@@ -185,10 +237,9 @@ private fun BottomSheetOption(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 16.dp), // Dikey boşluğu artırdık
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // İkonu renkli bir daire içine alıyoruz
         Box(
             modifier = Modifier
                 .size(40.dp)

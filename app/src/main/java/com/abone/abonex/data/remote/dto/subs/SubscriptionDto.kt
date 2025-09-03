@@ -7,8 +7,10 @@ data class SubscriptionDto(
     val currency: String,
     val billingCycle: String,
     val startDate: String,
+    val endDate: String,
     val nextPaymentDate: String,
     val cardName: String?,
     val cardLastFourDigits: String?,
-    val isActive: Boolean
+    val isActive: Boolean,
+    val logoUrl: String?,
 )

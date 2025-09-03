@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abone.abonex.data.local.TokenManager
 import com.abone.abonex.data.remote.dto.UserDto
+import com.abone.abonex.domain.model.HomeSubscriptions
 import com.abone.abonex.domain.model.MonthlySpend
 import com.abone.abonex.domain.model.Subscription
 import com.abone.abonex.domain.repository.SubscriptionRepository
@@ -23,7 +24,7 @@ private const val TAG = "HomeViewModel"
 data class HomeUiState(
     val isLoading: Boolean = true,
     val user: UserDto? = null,
-    val subscriptions: List<Subscription> = emptyList(),
+    val homeSubscriptions: HomeSubscriptions? = null,
     val monthlySpend: MonthlySpend? = null,
     val error: String? = null
 )
@@ -41,7 +42,7 @@ class HomeViewModel @Inject constructor(
     init {
 
         observeUserProfile()
-        observeSubscriptions()
+        observeHomeSubscriptions()
         observeMonthlySpend()
 
         refreshAllData()
@@ -50,7 +51,7 @@ class HomeViewModel @Inject constructor(
     fun refreshAllData() {
         viewModelScope.launch {
             userRepository.loadUserProfile()
-            subscriptionRepository.refreshUserSubscriptions()
+            subscriptionRepository.refreshHomeViewSubscriptions()
             subscriptionRepository.refreshMonthlySpend()
         }
     }
@@ -63,15 +64,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun observeSubscriptions() {
+    private fun observeHomeSubscriptions() {
         viewModelScope.launch {
-            subscriptionRepository.getUserSubscriptions().collect { result ->
+            subscriptionRepository.getHomeViewSubscriptions().collect { result ->
                 _uiState.update { currentState ->
                     when (result) {
                         is Resource.Loading -> currentState.copy(isLoading = true)
                         is Resource.Success -> currentState.copy(
                             isLoading = false,
-                            subscriptions = result.data ?: emptyList(),
+                            homeSubscriptions = result.data,
                             error = null
                         )
                         is Resource.Error -> currentState.copy(

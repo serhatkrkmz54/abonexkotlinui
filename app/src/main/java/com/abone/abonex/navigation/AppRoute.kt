@@ -8,4 +8,7 @@ object AppRoute {
     const val REGISTER_SCREEN = "register_screen"
     const val PROFILE_SCREEN = "profile_screen"
     const val ADD_SUBSCRIPTION_SCREEN = "add_subscription_screen"
+    const val ALL_SUBSCRIPTIONS_SCREEN = "all_subscriptions_screen"
+    const val TEMPLATE_CONFIRM_SCREEN = "template_confirm_screen"
+    const val SUBSCRIPTION_DETAIL_SCREEN = "subscription_detail_screen"
 }

@@ -5,5 +5,11 @@ data class Subscription(
     val name: String,
     val amount: Double,
     val currency: String,
-    val nextPaymentDate: String
+    val billingCycle: String,
+    val nextPaymentDate: String,
+    val startDate: String,
+    val endDate: String?,
+    val cardName: String?,
+    val cardLastFourDigits: String?,
+    val logoUrl: String?
 )
