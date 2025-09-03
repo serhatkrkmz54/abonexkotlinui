@@ -20,5 +20,6 @@ interface SubscriptionRepository {
     suspend fun refreshMonthlySpend()
     suspend fun createSubscriptionFromPlan(request: CreateSubscriptionFromPlanRequest): Resource<Subscription>
     suspend fun logPayment(id: Long): Resource<Unit>
+    suspend fun cancelSubscription(id: Long): Resource<Unit>
 
 }

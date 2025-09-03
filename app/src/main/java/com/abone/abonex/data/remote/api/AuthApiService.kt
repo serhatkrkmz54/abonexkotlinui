@@ -4,7 +4,6 @@ import com.abone.abonex.data.remote.dto.AuthResponse
 import com.abone.abonex.data.remote.dto.LoginRequest
 import com.abone.abonex.data.remote.dto.ReactivateRequest
 import com.abone.abonex.data.remote.dto.RegisterRequest
-import com.abone.abonex.data.remote.dto.UserDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -17,9 +16,7 @@ interface AuthApiService{
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): Response<AuthResponse>
 
-    @POST("api/auth/reactive-account")
+    @POST("api/auth/reactivate-account")
     suspend fun reactiveAccount(@Body request: ReactivateRequest): Response<AuthResponse>
 
-    @GET("api/user/profile")
-    suspend fun getUserProfile(): Response<UserDto>
 }

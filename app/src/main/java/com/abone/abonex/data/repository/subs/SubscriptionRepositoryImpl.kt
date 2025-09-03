@@ -1,5 +1,6 @@
 package com.abone.abonex.data.repository.subs
 
+import android.util.Log
 import com.abone.abonex.data.mapper.toHomeSubscriptions
 import com.abone.abonex.data.mapper.toMonthlySpend
 import com.abone.abonex.data.mapper.toSubscription
@@ -117,6 +118,21 @@ class SubscriptionRepositoryImpl @Inject constructor(
                 Resource.Success(Unit)
             } else {
                 Resource.Error("Ödeme kaydedilemedi: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Bilinmeyen bir hata oluştu.")
+        }
+    }
+
+    override suspend fun cancelSubscription(id: Long): Resource<Unit> {
+        return try {
+            val response = api.cancelSubscription(id)
+            if (response.isSuccessful) {
+                refreshHomeViewSubscriptions()
+                refreshMonthlySpend()
+                Resource.Success(Unit)
+            } else {
+                Resource.Error("Abonelik iptal edilemedi: ${response.message()}")
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Bilinmeyen bir hata oluştu.")

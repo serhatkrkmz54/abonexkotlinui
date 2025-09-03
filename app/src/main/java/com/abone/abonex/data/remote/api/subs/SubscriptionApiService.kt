@@ -10,6 +10,7 @@ import com.abone.abonex.data.remote.dto.subs.SubscriptionDto
 import com.abone.abonex.data.remote.dto.subs.TemplateWithPlansDto
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -42,5 +43,8 @@ interface SubscriptionApiService{
 
     @POST("api/v1/subscriptions/{id}/log-payment")
     suspend fun logPayment(@Path("id") id: Long): Response<PaymentHistoryDto>
+
+    @DELETE("api/v1/subscriptions/deactive/{id}")
+    suspend fun cancelSubscription(@Path("id") id: Long): Response<Unit>
 
 }

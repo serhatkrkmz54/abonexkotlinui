@@ -49,7 +49,7 @@ fun MonthlySpendDto.toMonthlySpend(): MonthlySpend {
 }
 fun HomeSubscriptionsDto.toHomeSubscriptions(): HomeSubscriptions {
     return HomeSubscriptions(
-        overdue = overduePayments?.map { it.toSubscription() } ?: emptyList(),
+        overdue = overdueSubscriptions?.map { it.toSubscription() } ?: emptyList(),
         upcoming = upcomingPayments?.map { it.toSubscription() } ?: emptyList(),
         expired = expiredSubscriptions?.map { it.toSubscription() } ?: emptyList(),
         other = otherSubscriptions?.map { it.toSubscription() } ?: emptyList()

@@ -65,7 +65,27 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun reactivateAccount(request: ReactivateRequest): Resource<AuthResponse> {
-        TODO("Not yet implemented")
+        return try {
+            val response = apiService.reactiveAccount(request)
+            if (response.isSuccessful) {
+                Resource.Success(response.body()!!)
+            } else {
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val type = object : TypeToken<Map<String, Any>>() {}.type
+                        val errorMap: Map<String, Any> = Gson().fromJson(errorBody, type)
+                        errorMap["message"]?.toString() ?: errorMap.values.firstOrNull()?.toString()
+                    } catch (e: Exception) {
+                        response.message()
+                    }
+                } else {
+                    "Hesap aktifleştirilemedi (Kod: ${response.code()})"
+                }
+                Resource.Error(errorMessage ?: "Bilinmeyen bir hata")
+            }
+        } catch (e: Exception) {
+            Resource.Error("Bir hata oluştu: ${e.message}")
+        }
     }
-
 }

@@ -18,13 +18,14 @@ data class SubscriptionDetailState(
     val isLoading: Boolean = true,
     val subscription: Subscription? = null,
     val paymentHistory: List<PaymentHistory> = emptyList(),
+    val cancellationSuccess: Boolean = false,
     val error: String? = null
 )
 
 @HiltViewModel
 class SubscriptionDetailViewModel @Inject constructor(
     private val repository: SubscriptionRepository,
-    savedStateHandle: SavedStateHandle // Navigasyon argümanlarını almak için
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SubscriptionDetailState())
@@ -36,12 +37,22 @@ class SubscriptionDetailViewModel @Inject constructor(
         loadDetails()
     }
 
+    fun cancelSubscription() {
+        viewModelScope.launch {
+            val result = repository.cancelSubscription(subscriptionId)
+            if (result is Resource.Success) {
+                _state.update { it.copy(cancellationSuccess = true) }
+            } else if (result is Resource.Error) {
+                _state.update { it.copy(error = result.message) }
+            }
+        }
+    }
+
     fun logPayment() {
         viewModelScope.launch {
-            // Ödeme kaydetme başarılı olursa, verileri yenile
-            val result = repository.logPayment(subscriptionId) // Bu metodu Repository'de oluşturmalısınız
+            val result = repository.logPayment(subscriptionId)
             if (result is Resource.Success) {
-                loadDetails() // Sayfayı en güncel verilerle yeniden yükle
+                loadDetails()
             }
         }
     }

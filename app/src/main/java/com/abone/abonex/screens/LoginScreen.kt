@@ -1,29 +1,46 @@
 package com.abone.abonex.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -34,34 +51,62 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.abone.abonex.R
 import com.abone.abonex.navigation.AppRoute
+import com.abone.abonex.ui.features.LoginResult
 import com.abone.abonex.ui.features.LoginViewModel
 import com.abone.abonex.ui.theme.InputBorder
 import com.abone.abonex.ui.theme.poppins
-import com.abone.abonex.util.Resource
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     val loginState by viewModel.loginState.collectAsState()
-    val isButtonEnabled = remember(email, password, loginState) {
-        email.trim().isNotEmpty() &&
-                password.isNotEmpty() &&
-                loginState !is Resource.Loading
-    }
-    val isError = loginState is Resource.Error
+    var showReactivateDialog by remember { mutableStateOf(false) }
 
+    val isButtonEnabled = remember(viewModel.email, viewModel.password, loginState) {
+        viewModel.email.trim().isNotEmpty() &&
+                viewModel.password.isNotEmpty() &&
+                loginState !is LoginResult.Loading
+    }
+    val errorMessage = if (loginState is LoginResult.Error && !(loginState as LoginResult.Error).isAccountInactive) {
+        (loginState as LoginResult.Error).message
+    } else {
+        null
+    }
     LaunchedEffect(loginState) {
-        if (loginState is Resource.Success) {
-            navController.navigate(AppRoute.HOME_SCREEN) {
-                popUpTo(AppRoute.LOGIN_SCREEN) { inclusive = true }
+        when (val state = loginState) {
+            is LoginResult.Success -> {
+                navController.navigate(AppRoute.HOME_SCREEN) {
+                    popUpTo(AppRoute.LOGIN_SCREEN) { inclusive = true }
+                }
             }
+            is LoginResult.Error -> {
+                if (state.isAccountInactive) {
+                    showReactivateDialog = true
+                }
+            }
+            else -> {}
         }
+    }
+    if (showReactivateDialog) {
+        AlertDialog(
+            onDismissRequest = { showReactivateDialog = false },
+            title = { Text("Hesap Aktifleştirme") },
+            text = { Text("Hesabınız pasif durumdadır. Yeniden aktifleştirmek ister misiniz?") },
+            confirmButton = {
+                Button(onClick = {
+                    viewModel.reactivateAccount()
+                    showReactivateDialog = false
+                }) { Text("Evet, Aktifleştir") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showReactivateDialog = false }) { Text("Vazgeç") }
+            }
+        )
     }
 
     Column(
@@ -95,25 +140,22 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = viewModel.email,
+            onValueChange = { viewModel.email = it },
             placeholder = { Text("Email", color = Color.Gray) },
-            isError = isError,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
+            isError = errorMessage != null,
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
-            colors = TextFieldDefaults.colors(
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = InputBorder,
                 unfocusedContainerColor = InputBorder,
                 cursorColor = Color.White,
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
-
-                focusedIndicatorColor = Color(0xFF6759FF),
-                unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
-                errorIndicatorColor = Color.Red
+                focusedBorderColor = Color(0xFF6759FF),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
+                errorBorderColor = Color.Red
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
         )
@@ -121,25 +163,22 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
+            value = viewModel.password,
+            onValueChange = { viewModel.password = it },
             placeholder = { Text("Şifre", color = Color.Gray) },
-            isError = isError,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
+            isError = errorMessage != null,
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
-            colors = TextFieldDefaults.colors(
+            colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = InputBorder,
                 unfocusedContainerColor = InputBorder,
                 cursorColor = Color.White,
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
-
-                focusedIndicatorColor = Color(0xFF6759FF),
-                unfocusedIndicatorColor = Color.Gray.copy(alpha = 0.5f),
-                errorIndicatorColor = Color.Red
+                focusedBorderColor = Color(0xFF6759FF),
+                unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
+                errorBorderColor = Color.Red
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -151,66 +190,39 @@ fun LoginScreen(
             }
         )
 
+        errorMessage?.let {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (loginState is Resource.Error) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = "Hata",
-                    tint = Color.Red
-                )
-                Text(
-                    text = (loginState as Resource.Error).message ?: "Bilinmeyen hata",
-                    color = Color.Red
-                )
+        Button(
+            onClick = { viewModel.login() },
+            modifier = Modifier.fillMaxWidth().height(55.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6759FF), contentColor = Color.White),
+            enabled = isButtonEnabled
+        ) {
+            if (loginState is LoginResult.Loading) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
+            } else {
+                Text("Giriş Yap", fontWeight = FontWeight.Bold)
             }
         }
 
-        Button(
-            onClick = { viewModel.login(email, password) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF6759FF),
-                contentColor = Color.White
-            ),
-            enabled = isButtonEnabled
-        ) {
-            Text("Giriş Yap", fontWeight = FontWeight.Bold)
-        }
-
-        if (loginState is Resource.Loading) {
-            Spacer(modifier = Modifier.height(16.dp))
-            CircularProgressIndicator(color = Color.White)
-        }
-
         Row(
-            modifier = Modifier
-                .padding(vertical = 20.dp),
+            modifier = Modifier.padding(vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(text = "Hesabın yok mu? ", fontSize = 14.sp, fontFamily = poppins, color = Color.White)
             Text(
-                text = stringResource(R.string.login_screen_kayit1),
-                fontSize = 14.sp,
-                fontFamily = poppins,
-                color = Color.White
-            )
-            Text(
-                text = stringResource(R.string.login_screen_kayitol),
+                text = "Kayıt Ol",
                 fontSize = 14.sp,
                 fontFamily = poppins,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFFFF9800),
-                modifier = Modifier.clickable {
-                    navController.navigate(AppRoute.REGISTER_SCREEN)
-                }
+                modifier = Modifier.clickable { navController.navigate(AppRoute.REGISTER_SCREEN) }
             )
         }
     }

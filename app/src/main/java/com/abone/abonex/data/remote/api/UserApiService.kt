@@ -14,6 +14,6 @@ interface UserApiService {
     @PATCH("api/user/update-profile")
     suspend fun updateUserProfile(@Body request: UserProfileUpdateRequest): Response<UserDto>
 
-    @PATCH("api/user/deactivate")
+    @PATCH("api/user/deactive-account")
     suspend fun deactivateAccount(): Response<Unit>
 }

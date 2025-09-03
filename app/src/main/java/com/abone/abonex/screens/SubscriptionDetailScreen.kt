@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.abone.abonex.components.main.SubscriptionLogo
 import com.abone.abonex.domain.model.PaymentHistory
 import com.abone.abonex.domain.model.Subscription
+import com.abone.abonex.navigation.AppRoute
 import com.abone.abonex.ui.features.SubscriptionDetailViewModel
 import com.abone.abonex.ui.theme.GradientEnd
 import com.abone.abonex.ui.theme.GradientStart
@@ -40,29 +41,79 @@ fun SubscriptionDetailScreen(
     viewModel: SubscriptionDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.cancellationSuccess) {
+        if (state.cancellationSuccess) {
+            navController.popBackStack(AppRoute.HOME_SCREEN, inclusive = false)
+        }
+    }
+
+    // Onay Diyaloğu
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showConfirmDialog = false },
+            title = { Text("Aboneliği İptal Et") },
+            text = { Text("Bu aboneliği iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.cancelSubscription()
+                        showConfirmDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Evet, İptal Et")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDialog = false }) {
+                    Text("Vazgeç")
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(state.subscription?.name ?: "Abonelik Detayı") },
+                title = { Text(state.subscription?.name ?: "Detaylar") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Geri")
                     }
+                },
+                // TopAppBar'a aksiyon menüsü ekliyoruz
+                actions = {
+                    Box {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "Daha Fazla Seçenek")
+                        }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("İptal Et", color = MaterialTheme.colorScheme.error) },
+                                onClick = {
+                                    showMenu = false
+                                    showConfirmDialog = true // Onay diyaloğunu göster
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "İptal Et",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            )
+                            // TODO: "Düzenle" gibi başka seçenekler buraya eklenebilir
+                        }
+                    }
                 }
             )
         },
-        floatingActionButton = {
-            state.subscription?.let { sub ->
-                if (!LocalDate.parse(sub.nextPaymentDate).isAfter(LocalDate.now())) {
-                    ExtendedFloatingActionButton(
-                        onClick = { viewModel.logPayment() },
-                        icon = { Icon(Icons.Default.Payment, null) },
-                        text = { Text("Ödeme Yaptım!") }
-                    )
-                }
-            }
-        }
     ) { padding ->
         when {
             state.isLoading -> Box(
