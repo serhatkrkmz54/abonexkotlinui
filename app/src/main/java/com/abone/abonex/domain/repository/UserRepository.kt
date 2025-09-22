@@ -10,4 +10,6 @@ interface UserRepository {
     suspend fun loadUserProfile(): Resource<Unit>
     suspend fun updateUserProfile(request: UserProfileUpdateRequest): Resource<UserDto>
     suspend fun deactivateAccount(): Resource<Unit>
+    suspend fun updateFcmToken(token: String)
+
 }
