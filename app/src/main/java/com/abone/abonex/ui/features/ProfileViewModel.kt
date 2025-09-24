@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
@@ -26,12 +27,13 @@ class ProfileViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        observeUserProfile()
+        loadProfile()
     }
 
-    private fun observeUserProfile() {
+    private fun loadProfile() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            userRepository.loadUserProfile()
             userRepository.getCachedUserProfile()
                 .catch { e ->
                     _uiState.update { it.copy(isLoading = false, error = e.message) }
@@ -45,15 +47,12 @@ class ProfileViewModel @Inject constructor(
     fun updateUserProfile(request: UserProfileUpdateRequest) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, updateError = null) }
-
             val result = userRepository.updateUserProfile(request)
-
             if (result is Resource.Error) {
                 _uiState.update {
                     it.copy(isLoading = false, updateError = result.message)
                 }
             }
-
             else {
                 _uiState.update { it.copy(isLoading = false) }
             }
@@ -83,6 +82,9 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun logout() {
-        // TODO: Çıkış yapma işlemleri eklenecek
+        viewModelScope.launch {
+            tokenManager.clearToken()
+            _uiState.update { it.copy(isLoggedOut = true) }
+        }
     }
 }

@@ -72,6 +72,14 @@ fun ProfileScreen(
         }
     }
 
+    LaunchedEffect(uiState.isLoggedOut) {
+        if (uiState.isLoggedOut) {
+            navController.navigate(AppRoute.LOGIN_SCREEN) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) }

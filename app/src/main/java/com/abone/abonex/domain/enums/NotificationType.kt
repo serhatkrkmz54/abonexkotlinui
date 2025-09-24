@@ -1,0 +1,12 @@
+package com.abone.abonex.domain.enums
+
+enum class NotificationType {
+    UPCOMING_PAYMENT,
+    SUBSCRIPTION_EXPIRED,
+    PAYMENT_OVERDUE,
+    PAYMENT_CONFIRMED,
+    SUBSCRIPTION_CANCELLED,
+    ACCOUNT_REACTIVATION_CODE_SENT,
+    ACCOUNT_ACTIVATED,
+    UNKNOWN
+}

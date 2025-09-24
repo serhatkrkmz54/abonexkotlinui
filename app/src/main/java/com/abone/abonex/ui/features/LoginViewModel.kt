@@ -20,7 +20,8 @@ sealed class LoginResult {
     object Idle : LoginResult()
     object Loading : LoginResult()
     data class Success(val message: String) : LoginResult()
-    data class Error(val message: String, val isAccountInactive: Boolean = false) : LoginResult()
+    data class Error(val message: String, val isAccountInactive: Boolean = false, val credentials: LoginRequest? = null) : LoginResult()
+    data class OtpSent(val email: String, val password: String) : LoginResult()
 }
 
 @HiltViewModel
@@ -39,9 +40,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _loginState.value = LoginResult.Loading
 
-            val request = LoginRequest(email = email, password = password)
+            val request = LoginRequest(email, password)
             val result = authRepository.login(request)
-
             when (result) {
                 is Resource.Success -> {
                     val token = result.data?.token
@@ -56,35 +56,30 @@ class LoginViewModel @Inject constructor(
                     val isInactive = result.message?.contains("HESAP_PASIF") == true
                     _loginState.value = LoginResult.Error(
                         message = if (isInactive) "Hesabınız pasif durumda." else result.message ?: "Bilinmeyen bir hata oluştu.",
-                        isAccountInactive = isInactive
+                        isAccountInactive = isInactive,
+                        credentials = if (isInactive) request else null
                     )
                 }
                 else -> {}
             }
         }
     }
-    fun reactivateAccount() {
+    fun requestReactivationOtp() {
         viewModelScope.launch {
-            _loginState.value = LoginResult.Loading
-
-            val request = ReactivateRequest(email = email, password = password)
-            val result = authRepository.reactivateAccount(request)
-
-            when (result) {
-                is Resource.Success -> {
-                    val token = result.data?.token
-                    if (token != null) {
-                        tokenManager.saveToken(token)
-                        _loginState.value = LoginResult.Success("Hesap başarıyla aktifleştirildi!")
-                    } else {
-                        _loginState.value = LoginResult.Error("Token alınamadı.")
-                    }
+            val lastState = _loginState.value
+            if (lastState is LoginResult.Error && lastState.isAccountInactive && lastState.credentials != null) {
+                _loginState.value = LoginResult.Loading
+                val creds = lastState.credentials
+                val request = ReactivateRequest(creds.email, creds.password)
+                when (val result = authRepository.requestReactivationOtp(request)) {
+                    is Resource.Success -> _loginState.value = LoginResult.OtpSent(creds.email, creds.password)
+                    is Resource.Error -> _loginState.value = LoginResult.Error(result.message ?: "Kod gönderilemedi.")
+                    else -> {}
                 }
-                is Resource.Error -> {
-                    _loginState.value = LoginResult.Error(result.message ?: "Bilinmeyen bir hata oluştu.")
-                }
-                else -> {}
+            } else {
+                _loginState.value = LoginResult.Error("Aktifleştirme için gerekli bilgiler bulunamadı.")
             }
+
         }
     }
 }

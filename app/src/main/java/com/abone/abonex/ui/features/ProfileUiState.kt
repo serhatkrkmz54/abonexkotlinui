@@ -7,5 +7,6 @@ data class ProfileUiState(
     val user: UserDto? = null,
     val error: String? = null,
     val updateError: String? = null,
-    val isDeactivated: Boolean = false
+    val isDeactivated: Boolean = false,
+    val isLoggedOut: Boolean = false
 )

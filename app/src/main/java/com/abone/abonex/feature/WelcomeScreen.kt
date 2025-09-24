@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.abone.abonex.R
+import com.abone.abonex.components.common.MarqueeIcon
 import com.abone.abonex.navigation.AppRoute
 import com.abone.abonex.ui.features.SplashViewModel
 import com.abone.abonex.ui.theme.poppins
@@ -106,10 +108,10 @@ fun WelcomeScreen(navController: NavController) {
                 fontFamily = poppins,
                 color = colorResource(R.color.splash_button_text)
             )
-            Icon(
-                imageVector = Icons.Filled.ArrowBackIosNew,
-                contentDescription = null,
-                modifier = Modifier.padding(start = 8.dp)
+            MarqueeIcon(
+                modifier = Modifier.width(30.dp).padding(start = 8.dp),
+                iconResId = R.drawable.ic_chevron_right,
+                tint = Color.Black
             )
         }
         Row(

@@ -4,6 +4,7 @@ import com.abone.abonex.data.remote.dto.AuthResponse
 import com.abone.abonex.data.remote.dto.LoginRequest
 import com.abone.abonex.data.remote.dto.ReactivateRequest
 import com.abone.abonex.data.remote.dto.RegisterRequest
+import com.abone.abonex.data.remote.dto.VerifyCodeRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -16,7 +17,10 @@ interface AuthApiService{
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): Response<AuthResponse>
 
-    @POST("api/auth/reactivate-account")
-    suspend fun reactiveAccount(@Body request: ReactivateRequest): Response<AuthResponse>
+    @POST("api/auth/request-reactivation-otp")
+    suspend fun requestReactivationOtp(@Body request: ReactivateRequest): Response<Unit>
+
+    @POST("api/auth/verify-reactivation-otp")
+    suspend fun verifyReactivationOtp(@Body request: VerifyCodeRequest): Response<AuthResponse>
 
 }

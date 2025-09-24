@@ -21,6 +21,11 @@ data class ReactivateRequest(
     val password: String
 )
 
+data class VerifyCodeRequest(
+    val email: String,
+    val code: String
+)
+
 data class AuthResponse(
     val token: String
 )

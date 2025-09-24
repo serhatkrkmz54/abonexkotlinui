@@ -3,6 +3,8 @@ package com.abone.abonex.navigation
 import HomeScreen
 import android.R.attr.type
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,14 +15,14 @@ import com.abone.abonex.feature.WelcomeScreen
 import com.abone.abonex.screens.AddSubscriptionScreen
 import com.abone.abonex.screens.AllSubscriptionsScreen
 import com.abone.abonex.screens.LoginScreen
+import com.abone.abonex.screens.OtpScreen
 import com.abone.abonex.screens.ProfileScreen
 import com.abone.abonex.screens.RegisterScreen
 import com.abone.abonex.screens.SubscriptionDetailScreen
 import com.abone.abonex.screens.TemplateConfirmationScreen
 
 @Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
+fun AppNavigation(navController: NavHostController) {
 
     NavHost(
         navController = navController,
@@ -67,6 +69,15 @@ fun AppNavigation() {
             arguments = listOf(navArgument("subscriptionId") { type = NavType.LongType })
         ) {
             SubscriptionDetailScreen(navController = navController)
+        }
+        composable(
+            route = "${AppRoute.OTP_SCREEN}/{email}/{password}",
+            arguments = listOf(
+                navArgument("email") { type = NavType.StringType },
+                navArgument("password") { type = NavType.StringType }
+            )
+        ) {
+            OtpScreen(navController = navController)
         }
     }
 }

@@ -9,6 +9,7 @@ import com.abone.abonex.data.repository.UserRepositoryImpl
 import com.abone.abonex.data.repository.subs.SubscriptionRepositoryImpl
 import com.abone.abonex.domain.repository.SubscriptionRepository
 import com.abone.abonex.domain.repository.UserRepository
+import com.abone.abonex.util.SnackbarManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    const val BASE_URL = "http://192.168.1.136:8080/"
+    const val BASE_URL = "http://10.121.242.101:8080/"
+
+    @Provides
+    @Singleton
+    fun provideSnackbarManager(): SnackbarManager {
+        return SnackbarManager()
+    }
 
     @Provides
     @Singleton

@@ -1,6 +1,7 @@
 package com.abone.abonex.data.repository
 
 import com.abone.abonex.data.remote.api.UserApiService
+import com.abone.abonex.data.remote.dto.UpdateFcmTokenRequest
 import com.abone.abonex.data.remote.dto.UserDto
 import com.abone.abonex.data.remote.dto.UserProfileUpdateRequest
 import com.abone.abonex.domain.repository.UserRepository
@@ -59,6 +60,16 @@ class UserRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Bilinmeyen bir hata oluştu.")
+        }
+    }
+
+    override suspend fun updateFcmToken(token: String): Resource<Unit> {
+        return try {
+            val response = userApiService.updateFcmToken(UpdateFcmTokenRequest(token))
+            if (response.isSuccessful) Resource.Success(Unit)
+            else Resource.Error("FCM token güncellenemedi.")
+        } catch (e: Exception) {
+            Resource.Error(e.message)
         }
     }
 }

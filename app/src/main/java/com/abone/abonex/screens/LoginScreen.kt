@@ -89,6 +89,9 @@ fun LoginScreen(
                     showReactivateDialog = true
                 }
             }
+            is LoginResult.OtpSent -> {
+                navController.navigate("${AppRoute.OTP_SCREEN}/${state.email}/${state.password}")
+            }
             else -> {}
         }
     }
@@ -99,9 +102,9 @@ fun LoginScreen(
             text = { Text("Hesabınız pasif durumdadır. Yeniden aktifleştirmek ister misiniz?") },
             confirmButton = {
                 Button(onClick = {
-                    viewModel.reactivateAccount()
+                    viewModel.requestReactivationOtp()
                     showReactivateDialog = false
-                }) { Text("Evet, Aktifleştir") }
+                }) { Text("Evet, Kod Gönder") }
             },
             dismissButton = {
                 TextButton(onClick = { showReactivateDialog = false }) { Text("Vazgeç") }
