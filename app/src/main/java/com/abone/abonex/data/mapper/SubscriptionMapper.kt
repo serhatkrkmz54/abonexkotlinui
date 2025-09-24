@@ -2,11 +2,13 @@ package com.abone.abonex.data.mapper
 
 import com.abone.abonex.data.remote.dto.subs.HomeSubscriptionsDto
 import com.abone.abonex.data.remote.dto.subs.MonthlySpendDto
+import com.abone.abonex.data.remote.dto.subs.NotificationDto
 import com.abone.abonex.data.remote.dto.subs.PaymentHistoryDto
 import com.abone.abonex.data.remote.dto.subs.SubscriptionDetailDto
 import com.abone.abonex.data.remote.dto.subs.SubscriptionDto
 import com.abone.abonex.domain.model.HomeSubscriptions
 import com.abone.abonex.domain.model.MonthlySpend
+import com.abone.abonex.domain.model.Notification
 import com.abone.abonex.domain.model.PaymentHistory
 import com.abone.abonex.domain.model.Subscription
 import com.abone.abonex.domain.model.SubscriptionDetail
@@ -66,5 +68,16 @@ fun SubscriptionDetailDto.toSubscriptionDetail(): SubscriptionDetail {
     return SubscriptionDetail(
         subscription = subscriptionModel,
         paymentHistory = paymentHistoryModel
+    )
+}
+
+fun NotificationDto.toNotification(): Notification {
+    return Notification(
+        id = id,
+        title = title,
+        body = body,
+        isRead = isRead,
+        createdAt = LocalDateTime.parse(createdAt),
+        relatedSubscriptionId = relatedSubscriptionId
     )
 }

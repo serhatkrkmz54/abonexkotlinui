@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,11 +32,13 @@ import com.abone.abonex.ui.theme.redRose
 fun HeaderSection(
     fullName: String,
     profileImageUrl: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    unreadCount: Int,
+    onNotificationClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 17.dp, vertical = 25.dp)
+            .padding(horizontal = 17.dp)
             .fillMaxWidth()
             .statusBarsPadding(),
         verticalAlignment = Alignment.CenterVertically
@@ -58,6 +63,16 @@ fun HeaderSection(
                     .padding(start = 5.dp)
                 )
         }
-        Icon(Icons.Default.Notifications, contentDescription = "Bildirimler", tint = Color.White, modifier = Modifier.size(25.dp) )
+        BadgedBox(
+            badge = {
+                if (unreadCount > 0) {
+                    Badge { Text(text = unreadCount.toString()) }
+                }
+            }
+        ) {
+            IconButton(onClick = onNotificationClick) {
+                Icon(Icons.Default.Notifications, contentDescription = "Bildirimler")
+            }
+        }
     }
 }

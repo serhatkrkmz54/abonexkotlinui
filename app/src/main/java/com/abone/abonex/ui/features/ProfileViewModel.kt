@@ -8,6 +8,7 @@ import com.abone.abonex.data.remote.dto.UserProfileUpdateRequest
 import com.abone.abonex.domain.repository.AuthRepository
 import com.abone.abonex.domain.repository.UserRepository
 import com.abone.abonex.util.Resource
+import com.abone.abonex.util.SnackbarManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val snackbarManager: SnackbarManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -47,14 +49,16 @@ class ProfileViewModel @Inject constructor(
     fun updateUserProfile(request: UserProfileUpdateRequest) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, updateError = null) }
-            val result = userRepository.updateUserProfile(request)
-            if (result is Resource.Error) {
-                _uiState.update {
-                    it.copy(isLoading = false, updateError = result.message)
+            when (val result = userRepository.updateUserProfile(request)) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(isLoading = false) }
+                    snackbarManager.showMessage("Profil başarıyla güncellendi!")
                 }
-            }
-            else {
-                _uiState.update { it.copy(isLoading = false) }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, updateError = result.message) }
+                    snackbarManager.showMessage("Hata: ${result.message}")
+                }
+                else -> {}
             }
         }
     }

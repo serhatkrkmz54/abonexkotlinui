@@ -15,6 +15,7 @@ import com.abone.abonex.feature.WelcomeScreen
 import com.abone.abonex.screens.AddSubscriptionScreen
 import com.abone.abonex.screens.AllSubscriptionsScreen
 import com.abone.abonex.screens.LoginScreen
+import com.abone.abonex.screens.NotificationsScreen
 import com.abone.abonex.screens.OtpScreen
 import com.abone.abonex.screens.ProfileScreen
 import com.abone.abonex.screens.RegisterScreen
@@ -78,6 +79,9 @@ fun AppNavigation(navController: NavHostController) {
             )
         ) {
             OtpScreen(navController = navController)
+        }
+        composable(route = AppRoute.NOTIFICATIONS_SCREEN) {
+            NotificationsScreen(navController = navController)
         }
     }
 }

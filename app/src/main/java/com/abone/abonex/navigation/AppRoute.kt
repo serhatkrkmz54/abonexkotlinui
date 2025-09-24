@@ -12,4 +12,5 @@ object AppRoute {
     const val TEMPLATE_CONFIRM_SCREEN = "template_confirm_screen"
     const val SUBSCRIPTION_DETAIL_SCREEN = "subscription_detail_screen"
     const val OTP_SCREEN = "otp_screen"
+    const val NOTIFICATIONS_SCREEN = "notifications_screen"
 }

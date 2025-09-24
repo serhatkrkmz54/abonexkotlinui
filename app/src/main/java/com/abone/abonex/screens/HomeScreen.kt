@@ -124,7 +124,12 @@ fun HomeScreen(
                 uiState.user?.let { user ->
                     HeaderSection(
                         fullName = user.firstName,
-                        profileImageUrl = user.profileImageUrl
+                        profileImageUrl = user.profileImageUrl,
+                        unreadCount = uiState.unreadNotificationCount,
+                        onNotificationClick = {
+                            navController.navigate(AppRoute.NOTIFICATIONS_SCREEN)
+                        },
+                        modifier = Modifier.statusBarsPadding()
                     )
                 }
                     uiState.monthlySpend?.let { spend ->

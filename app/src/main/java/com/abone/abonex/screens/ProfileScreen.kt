@@ -55,14 +55,6 @@ fun ProfileScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(uiState.updateError) {
-        uiState.updateError?.let { error ->
-            scope.launch {
-                snackbarHostState.showSnackbar(error)
-                viewModel.clearUpdateError()
-            }
-        }
-    }
 
     LaunchedEffect(uiState.isDeactivated) {
         if (uiState.isDeactivated) {
@@ -82,7 +74,6 @@ fun ProfileScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
         Box(
             modifier = Modifier

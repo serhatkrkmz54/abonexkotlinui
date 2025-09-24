@@ -8,6 +8,7 @@ import com.abone.abonex.data.remote.dto.UserDto
 import com.abone.abonex.domain.model.HomeSubscriptions
 import com.abone.abonex.domain.model.MonthlySpend
 import com.abone.abonex.domain.model.Subscription
+import com.abone.abonex.domain.repository.NotificationRepository
 import com.abone.abonex.domain.repository.SubscriptionRepository
 import com.abone.abonex.domain.repository.UserRepository
 import com.abone.abonex.util.Resource
@@ -26,25 +27,25 @@ data class HomeUiState(
     val user: UserDto? = null,
     val homeSubscriptions: HomeSubscriptions? = null,
     val monthlySpend: MonthlySpend? = null,
-    val error: String? = null
+    val error: String? = null,
+    val unreadNotificationCount: Int = 0
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val tokenManager: TokenManager,
-    private val subscriptionRepository: SubscriptionRepository
+    private val subscriptionRepository: SubscriptionRepository,
+    private val notificationRepository: NotificationRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-
         observeUserProfile()
         observeHomeSubscriptions()
         observeMonthlySpend()
-
         refreshAllData()
     }
 
@@ -53,6 +54,7 @@ class HomeViewModel @Inject constructor(
             userRepository.loadUserProfile()
             subscriptionRepository.refreshHomeViewSubscriptions()
             subscriptionRepository.refreshMonthlySpend()
+            notificationRepository.refreshUnreadCount()
         }
     }
 
@@ -91,6 +93,16 @@ class HomeViewModel @Inject constructor(
             subscriptionRepository.getCurrentMonthTotalSpend().collect { result ->
                 if (result is Resource.Success) {
                     _uiState.update { it.copy(monthlySpend = result.data) }
+                }
+            }
+        }
+    }
+
+    private fun observeUnreadCount() {
+        viewModelScope.launch {
+            notificationRepository.getUnreadCount().collect { result ->
+                if (result is Resource.Success) {
+                    _uiState.update { it.copy(unreadNotificationCount = result.data ?: 0) }
                 }
             }
         }

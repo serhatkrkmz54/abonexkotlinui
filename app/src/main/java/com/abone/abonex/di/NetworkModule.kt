@@ -3,6 +3,7 @@ package com.abone.abonex.di
 import com.abone.abonex.data.local.TokenManager
 import com.abone.abonex.data.remote.api.AuthApiService
 import com.abone.abonex.data.remote.api.UserApiService
+import com.abone.abonex.data.remote.api.subs.NotificationApiService
 import com.abone.abonex.data.remote.api.subs.SubscriptionApiService
 import com.abone.abonex.data.remote.interceptor.AuthInterceptor
 import com.abone.abonex.data.repository.UserRepositoryImpl
@@ -24,12 +25,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    const val BASE_URL = "http://10.121.242.101:8080/"
+    const val BASE_URL = "http://192.168.1.136:8080/"
 
     @Provides
     @Singleton
     fun provideSnackbarManager(): SnackbarManager {
         return SnackbarManager()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationApiService(retrofit: Retrofit): NotificationApiService {
+        return retrofit.create(NotificationApiService::class.java)
     }
 
     @Provides
