@@ -36,23 +36,27 @@ class NotificationsViewModel @Inject constructor(
             repository.getNotifications().collect { result ->
                 when (result) {
                     is Resource.Loading -> _state.update { it.copy(isLoading = true) }
-                    is Resource.Success -> _state.update { it.copy(isLoading = false, notifications = result.data ?: emptyList()) }
+                    is Resource.Success -> {
+
+                        _state.update { it.copy(isLoading = false, notifications = result.data ?: emptyList()) }
+                    }
                     is Resource.Error -> _state.update { it.copy(isLoading = false, error = result.message) }
-                    else -> {}
+                    else->{}
                 }
             }
         }
     }
 
     fun markAllAsRead() {
-        viewModelScope.launch {
-            repository.markAllAsRead()
-        }
+        viewModelScope.launch { repository.markAllAsRead() }
     }
 
+    fun refreshNotifications() {
+        viewModelScope.launch { repository.refreshNotifications() }
+    }
+
+
     fun markAsRead(id: Long) {
-        viewModelScope.launch {
-            repository.markAsRead(id)
-        }
+        viewModelScope.launch { repository.markAsRead(id) }
     }
 }

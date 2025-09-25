@@ -46,6 +46,7 @@ class HomeViewModel @Inject constructor(
         observeUserProfile()
         observeHomeSubscriptions()
         observeMonthlySpend()
+        observeUnreadCount()
         refreshAllData()
     }
 
@@ -102,7 +103,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             notificationRepository.getUnreadCount().collect { result ->
                 if (result is Resource.Success) {
-                    _uiState.update { it.copy(unreadNotificationCount = result.data ?: 0) }
+                    _uiState.update { currentState ->
+                        currentState.copy(unreadNotificationCount = result.data ?: 0)
+                    }
                 }
             }
         }

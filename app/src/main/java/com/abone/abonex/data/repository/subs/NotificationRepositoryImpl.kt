@@ -45,22 +45,26 @@ class NotificationRepositoryImpl @Inject constructor(
     }
 
     override suspend fun markAsRead(id: Long): Resource<Unit> {
-        return try {
-            if (api.markAsRead(id).isSuccessful) {
-                refreshNotifications()
-                refreshUnreadCount()
-                Resource.Success(Unit)
-            } else { Resource.Error("Okundu olarak işaretlenemedi.") }
+        val result = try {
+            if (api.markAsRead(id).isSuccessful) Resource.Success(Unit)
+            else Resource.Error("Okundu olarak işaretlenemedi.")
         } catch (e: Exception) { Resource.Error(e.message) }
+
+        if (result is Resource.Success) {
+            refreshNotifications()
+        }
+        return result
     }
 
     override suspend fun markAllAsRead(): Resource<Unit> {
-        return try {
-            if (api.markAllAsRead().isSuccessful) {
-                refreshNotifications()
-                refreshUnreadCount()
-                Resource.Success(Unit)
-            } else { Resource.Error("Tümü okundu olarak işaretlenemedi.") }
+        val result = try {
+            if (api.markAllAsRead().isSuccessful) Resource.Success(Unit)
+            else Resource.Error("Tümü okundu olarak işaretlenemedi.")
         } catch (e: Exception) { Resource.Error(e.message) }
+
+        if (result is Resource.Success) {
+            refreshNotifications()
+        }
+        return result
     }
 }

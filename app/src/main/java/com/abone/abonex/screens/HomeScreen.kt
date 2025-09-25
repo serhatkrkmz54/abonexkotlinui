@@ -126,9 +126,11 @@ fun HomeScreen(
                         fullName = user.firstName,
                         profileImageUrl = user.profileImageUrl,
                         unreadCount = uiState.unreadNotificationCount,
+                        isLoading = uiState.isLoading,
                         onNotificationClick = {
                             navController.navigate(AppRoute.NOTIFICATIONS_SCREEN)
                         },
+                        onRefreshClick = { viewModel.refreshAllData() },
                         modifier = Modifier.statusBarsPadding()
                     )
                 }
@@ -170,20 +172,26 @@ fun HomeScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            val homeSubs = uiState.homeSubscriptions
             when {
-                uiState.isLoading -> CircularProgressIndicator()
-                uiState.error != null -> Text(text = "Hata: ${uiState.error}")
-                uiState.homeSubscriptions != null -> {
-                    val subs = uiState.homeSubscriptions!!
-                    if(subs.overdue.isEmpty() && subs.upcoming.isEmpty() && subs.expired.isEmpty() && subs.other.isEmpty()) {
+                uiState.isLoading && homeSubs == null -> CircularProgressIndicator()
+                uiState.error != null && homeSubs == null -> Text(text = "Hata: ${uiState.error}")
+                homeSubs != null -> {
+                    val allSubsEmpty = homeSubs.overdue.isEmpty() && homeSubs.upcoming.isEmpty() &&
+                            homeSubs.expired.isEmpty() && homeSubs.other.isEmpty()
+
+                    if (allSubsEmpty) {
                         EmptyContent(onAddClick = { showBottomSheet = true })
                     } else {
-                        LazyColumn(modifier = Modifier.fillMaxSize(),contentPadding = PaddingValues(bottom = 30.dp)) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(bottom = 110.dp)
+                        ) {
                             item {
                                 SubscriptionCategorySection(
                                     title = "Gecikmiş Ödemeler",
                                     icon = Icons.Default.ErrorOutline,
-                                    subscriptions = subs.overdue,
+                                    subscriptions = homeSubs.overdue,
                                     navController = navController,
                                     titleColor = overdueBorderColor,
                                     itemBorderColor = overdueBorderColor
@@ -193,7 +201,7 @@ fun HomeScreen(
                                 SubscriptionCategorySection(
                                     title = "Yaklaşan Ödemeler",
                                     icon = Icons.Default.Update,
-                                    subscriptions = subs.upcoming,
+                                    subscriptions = homeSubs.upcoming,
                                     navController = navController,
                                     itemBorderColor = upcomingBorderColor
                                 )
@@ -201,29 +209,22 @@ fun HomeScreen(
                             item {
                                 SubscriptionCategorySection(
                                     title = "Süresi Dolan Abonelikler",
-                                    subscriptions = subs.expired,
                                     icon = Icons.Default.EventBusy,
+                                    subscriptions = homeSubs.expired,
                                     navController = navController,
                                     itemBorderColor = expiredBorderColor
                                 )
                             }
                             item {
                                 SubscriptionCategorySection(
-                                    title = "Aktif Abonelikler",
+                                    title = "Diğer Abonelikler",
                                     icon = Icons.AutoMirrored.Filled.List,
-                                    subscriptions = subs.other,
+                                    subscriptions = homeSubs.other,
                                     navController = navController,
                                     itemBorderColor = otherBorderColor
                                 )
                             }
                         }
-                    }
-                }
-                else -> {
-                    if (selectedItemRoute == "home") {
-                        EmptyContent(
-                            onAddClick = { showBottomSheet = true }
-                        )
                     }
                 }
             }
