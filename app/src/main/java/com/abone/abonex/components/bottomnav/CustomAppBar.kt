@@ -120,7 +120,7 @@ fun CustomAppBar(
                     Icon(
                         imageVector = Icons.Default.AddCircle,
                         contentDescription = "Ekle",
-                        tint = MaterialTheme.colorScheme.onPrimary,
+                        tint = Color.White,
                         modifier = Modifier.size(32.dp)
                     )
                 }
