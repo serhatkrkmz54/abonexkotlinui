@@ -51,7 +51,7 @@ fun HeaderSection(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 1.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -73,7 +73,7 @@ fun HeaderSection(
 
             Column {
                 Text(text = "Merhaba,", style = MaterialTheme.typography.titleMedium)
-                Text(text = fullName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text(text = fullName, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
         }
         BadgedBox(

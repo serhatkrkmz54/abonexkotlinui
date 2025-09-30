@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -57,9 +58,9 @@ val bottomNavItems = listOf(
         route = "home"
     ),
     BottomNavItem(
-        label = "Ayar",
-        icon = Icons.Default.Settings,
-        route = "settings"
+        label = "Analiz",
+        icon = Icons.Default.Analytics,
+        route = "analytics"
     ),
     BottomNavItem(
         label = "Profil",

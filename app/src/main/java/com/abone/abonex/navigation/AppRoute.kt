@@ -13,4 +13,6 @@ object AppRoute {
     const val SUBSCRIPTION_DETAIL_SCREEN = "subscription_detail_screen"
     const val OTP_SCREEN = "otp_screen"
     const val NOTIFICATIONS_SCREEN = "notifications_screen"
+    const val ANALYTICS_SCREEN = "analytics_screen"
+
 }

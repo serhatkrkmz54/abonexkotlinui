@@ -14,6 +14,7 @@ import com.abone.abonex.feature.SplashScreen
 import com.abone.abonex.feature.WelcomeScreen
 import com.abone.abonex.screens.AddSubscriptionScreen
 import com.abone.abonex.screens.AllSubscriptionsScreen
+import com.abone.abonex.screens.AnalyticsScreen
 import com.abone.abonex.screens.LoginScreen
 import com.abone.abonex.screens.NotificationsScreen
 import com.abone.abonex.screens.OtpScreen
@@ -82,6 +83,9 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(route = AppRoute.NOTIFICATIONS_SCREEN) {
             NotificationsScreen(navController = navController)
+        }
+        composable(route = AppRoute.ANALYTICS_SCREEN) {
+            AnalyticsScreen(navController = navController)
         }
     }
 }

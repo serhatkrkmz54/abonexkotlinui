@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.abone.abonex.R
 import com.abone.abonex.components.bottomnav.CustomAppBar
+import com.abone.abonex.components.common.ErrorStateContent
 import com.abone.abonex.components.main.EmptyContent
 import com.abone.abonex.components.main.HeaderSection
 import com.abone.abonex.components.main.MonthlySpendCard
@@ -148,7 +149,7 @@ fun HomeScreen(
                             navController.navigate(AppRoute.NOTIFICATIONS_SCREEN)
                         },
                         onRefreshClick = { viewModel.refreshAllData() },
-                        modifier = Modifier.statusBarsPadding()
+                        modifier = Modifier
                     )
                 }
                     uiState.monthlySpend?.let { spend ->
@@ -174,6 +175,7 @@ fun HomeScreen(
                             navController.navigate(AppRoute.LOGIN_SCREEN) { popUpTo(0) }
                         }
                         "profile" -> navController.navigate(AppRoute.PROFILE_SCREEN)
+                        "analytics" -> navController.navigate(AppRoute.ANALYTICS_SCREEN)
                         else -> {
                             selectedItemRoute = item.route
                         }
@@ -192,7 +194,12 @@ fun HomeScreen(
             val homeSubs = uiState.homeSubscriptions
             when {
                 uiState.isLoading && homeSubs == null -> CircularProgressIndicator()
-                uiState.error != null && homeSubs == null -> Text(text = "Hata: ${uiState.error}")
+                uiState.error != null && homeSubs == null -> {
+                    ErrorStateContent(
+                        message = uiState.error!!,
+                        onRetry = { viewModel.refreshAllData() }
+                    )
+                }
                 homeSubs != null -> {
                     val allSubsEmpty = homeSubs.overdue.isEmpty() && homeSubs.upcoming.isEmpty() &&
                             homeSubs.expired.isEmpty() && homeSubs.other.isEmpty()
